@@ -14,7 +14,11 @@ Current supported sources:
 
 # Installation
 
-Install ssht
+Install ssht using pip:
+
+    pip install ssht
+
+or if you want the latest version:
 
     pip install https://github.com/hkraal/ssht/archive/master.zip
 
