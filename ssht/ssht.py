@@ -54,7 +54,7 @@ def get_answer(text):   # pragma: nocover
 
 
 def main():     # pragma: nocover
-    logging.basicConfig(level=logging.DEBUG)
+    logging.basicConfig(level=logging.WARNING)
 
     parser = argparse.ArgumentParser()
     parser.add_argument("name", help="name of the host to connect to")
@@ -71,6 +71,6 @@ def main():     # pragma: nocover
         host = select_host(hosts)
 
     if host is None:
-        raise Exception('Should not get here')
+        raise Exception('No host set')
 
     ssh_connect(host, unknown)
