@@ -15,4 +15,4 @@ deploy:
   user: "$PYPI_USERNAME"
   password: "$PYPI_PASSWORD"
   on:
-    python: "2.7"
+    tags: true
