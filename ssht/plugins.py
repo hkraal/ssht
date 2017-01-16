@@ -15,10 +15,10 @@ class Host(object):
             ipv6=None,
             user=None):
         self.hostname = hostname
-        self.port = port
-        self.ipv4 = ipv4
-        self.ipv6 = ipv6
-        self.user = user
+        self.port = port if port else None
+        self.ipv4 = ipv4 if ipv4 else None
+        self.ipv6 = ipv6 if ipv6 else None
+        self.user = user if user else None
 
     @staticmethod
     def factory(host):
@@ -26,6 +26,7 @@ class Host(object):
             return Host(*host)
         if type(host) == dict:
             return Host(**host)
+        raise ValueError('Invalid type passed: {0}'.format(type(host)))
 
     @property
     def display(self):
@@ -33,6 +34,8 @@ class Host(object):
             return '{0}@{1}'.format(self.user, self.hostname)
         return self.hostname
 
+    def __repr__(self):
+        return '<Host: hostname={0}, ipv4={1}'.format(self.hostname, self.ipv4)
 
 class Parser(object):
 

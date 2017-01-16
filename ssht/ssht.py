@@ -9,19 +9,20 @@ import shlex
 import logging
 
 from .plugins import JsonParser, MySQLParser
+import os
 
 
 def ssh_connect(host, args):
     logging.debug('args = {0}'.format(args))
     logging.info('Connecting to "{0}"'.format(host))
 
-    # Connect to host IPv4
-    if hasattr(host, 'ipv4') and '-4' in args:
-        ssh_cmds = shlex.split('ssh {0}'.format(host.ipv4))
-        args.remove('-4')
-    elif hasattr(host, 'ipv6') and '-6' in args:
+    # Connect to IPv6 if forced
+    if hasattr(host, 'ipv6') and host.ipv6 and '-6' in args:
         ssh_cmds = shlex.split('ssh {0}'.format(host.ipv6))
-        args.remove('-6')
+    # Connect to IPv4 if specified
+    elif hasattr(host, 'ipv4') and host.ipv4:
+        ssh_cmds = shlex.split('ssh {0}'.format(host.ipv4))
+    # Connect on host name
     else:
         ssh_cmds = shlex.split('ssh {0}'.format(host.hostname))
     logging.debug('ssh_cmds = {0}'.format(ssh_cmds))
@@ -53,8 +54,13 @@ def get_answer(text):   # pragma: nocover
     return input(text)
 
 
+def get_log_level():
+    if os.getenv('SSHT_DEBUG', None):
+        return logging.DEBUG
+    return logging.WARNING
+
 def main():     # pragma: nocover
-    logging.basicConfig(level=logging.WARNING)
+    logging.basicConfig(level=get_log_level())
 
     parser = argparse.ArgumentParser()
     parser.add_argument("name", help="name of the host to connect to")

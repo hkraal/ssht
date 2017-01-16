@@ -4,6 +4,7 @@ Created on 13 Jan 2017
 @author: henk
 '''
 from ssht.plugins import Host
+import pytest
 
 
 class TestHost:
@@ -24,3 +25,7 @@ class TestHost:
     def test_factory_tuple(self):
         host = Host.factory(('host01.example.com',))
         assert host.hostname == 'host01.example.com'
+
+    def test_factory_exception(self):
+        with pytest.raises(ValueError):
+            Host.factory('host01.example.com')
