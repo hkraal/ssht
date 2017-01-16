@@ -15,17 +15,19 @@ import sys
 
 def ssh_connect(host, args):
     logging.debug('args = {0}'.format(args))
-    logging.info('Connecting to "{0}"'.format(host))
 
     # Connect to IPv6 if forced
     if hasattr(host, 'ipv6') and host.ipv6 and '-6' in args:
         ssh_cmds = shlex.split('ssh {0}'.format(host.ipv6))
+        print('Connecting to "{0}" ({1})'.format(host.hostname, host.ipv6))
     # Connect to IPv4 if specified
     elif hasattr(host, 'ipv4') and host.ipv4:
         ssh_cmds = shlex.split('ssh {0}'.format(host.ipv4))
+        print('Connecting to "{0}" ({1})'.format(host.hostname, host.ipv4))
     # Connect on host name
     else:
         ssh_cmds = shlex.split('ssh {0}'.format(host.hostname))
+        print('Connecting to "{0}"'.format(host.hostname))
     logging.debug('ssh_cmds = {0}'.format(ssh_cmds))
 
     # Connect to host port
@@ -74,9 +76,14 @@ def main():     # pragma: nocover
     hosts = jsonparser.search(args.name) + mysqlparser.search(args.name)
     logging.info(hosts)
 
+    host = None
     if len(hosts) == 1:
         host = hosts[0]
+    elif len(hosts) > 1:
         host = select_host(hosts)
+    
     if host is None:
+        print('No host, exiting.')
+        sys.exit(0)
 
     ssh_connect(host, unknown)
