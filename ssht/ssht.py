@@ -10,6 +10,7 @@ import logging
 
 from .plugins import JsonParser, MySQLParser
 import os
+import sys
 
 
 def ssh_connect(host, args):
@@ -46,9 +47,10 @@ def select_host(hosts):
         else:
             print('{0}) {1}'.format(idx + 1, host.hostname))
     option = get_answer('Connect to: ')
-
-    return hosts[int(option)-1]
-
+    try:
+        return hosts[int(option)-1]
+    except ValueError as ex:
+        return
 
 def get_answer(text):   # pragma: nocover
     return input(text)
@@ -74,10 +76,7 @@ def main():     # pragma: nocover
 
     if len(hosts) == 1:
         host = hosts[0]
-    else:
         host = select_host(hosts)
-
     if host is None:
-        raise Exception('No host set')
 
     ssh_connect(host, unknown)

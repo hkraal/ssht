@@ -29,3 +29,7 @@ class TestHost:
     def test_factory_exception(self):
         with pytest.raises(ValueError):
             Host.factory('host01.example.com')
+
+    def test_host_repr(self):
+        assert repr(Host(hostname='host01.example.com')) == '<Host: hostname=host01.example.com>'
+        assert repr(Host(hostname='host01.example.com', ipv4='192.168.0.2')) == '<Host: hostname=host01.example.com, ipv4=192.168.0.2>'

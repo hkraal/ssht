@@ -35,7 +35,9 @@ class Host(object):
         return self.hostname
 
     def __repr__(self):
-        return '<Host: hostname={0}, ipv4={1}'.format(self.hostname, self.ipv4)
+        if self.ipv4 is not None:
+            return '<Host: hostname={0}, ipv4={1}>'.format(self.hostname, self.ipv4)
+        return '<Host: hostname={0}>'.format(self.hostname)
 
 class Parser(object):
 

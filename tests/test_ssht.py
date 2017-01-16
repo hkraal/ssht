@@ -100,6 +100,9 @@ class TestSsht():
         mocker.patch('ssht.ssht.get_answer', return_value='2')
         assert select_host(hosts).hostname == 'host02.example.com'
         assert select_host(hosts).user == 'admin'
+        
+        mocker.patch('ssht.ssht.get_answer', return_value='')
+        assert select_host(hosts) is None
     
     def test_get_log_level_default(self):
         os.unsetenv("SSHT_DEBUG")
