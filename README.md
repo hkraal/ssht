@@ -34,13 +34,13 @@ Configure sources in ~/.ssht:
     	"hosts": [
     	  {
     		"port": "2222",
-    		"hostname": "host01.exmaple.com",
+    		"hostname": "host01.example.com",
     		"ipv4": "192.168.0.2",
     		"user": "root"
     	  },
     	  {
     		"port": "2222",
-    		"hostname": "host01.exmaple.com",
+    		"hostname": "host01.example.com",
     		"ipv4": "192.168.0.2",
     	  }
     	]

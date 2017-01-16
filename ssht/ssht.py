@@ -50,9 +50,10 @@ def select_host(hosts):
             print('{0}) {1}'.format(idx + 1, host.hostname))
     option = get_answer('Connect to: ')
     try:
-        return hosts[int(option)-1]
+        return hosts[int(option) - 1]
     except ValueError as ex:
         return
+
 
 def get_answer(text):   # pragma: nocover
     return input(text)
@@ -63,30 +64,31 @@ def get_log_level():
         return logging.DEBUG
     return logging.WARNING
 
+
 def main():     # pragma: nocover
     try:
         logging.basicConfig(level=get_log_level())
-    
+
         parser = argparse.ArgumentParser()
         parser.add_argument("name", help="name of the host to connect to")
         args, unknown = parser.parse_known_args()
-    
+
         home_dir = os.path.expanduser('~')
         jsonparser = JsonParser(os.path.join(home_dir, '.ssht'))
         mysqlparser = MySQLParser(os.path.join(home_dir, '.ssht'))
         hosts = jsonparser.search(args.name) + mysqlparser.search(args.name)
         logging.info(hosts)
-    
+
         host = None
         if len(hosts) == 1:
             host = hosts[0]
         elif len(hosts) > 1:
             host = select_host(hosts)
-        
+
         if host is None:
             print('No host, exiting.')
             sys.exit(0)
-    
+
         ssh_connect(host, unknown)
     except KeyboardInterrupt as ex:
         print()

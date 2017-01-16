@@ -22,9 +22,9 @@ class Host(object):
 
     @staticmethod
     def factory(host):
-        if type(host) == tuple:
+        if isinstance(host, tuple):
             return Host(*host)
-        if type(host) == dict:
+        if isinstance(host, dict):
             return Host(**host)
         raise ValueError('Invalid type passed: {0}'.format(type(host)))
 
@@ -36,8 +36,10 @@ class Host(object):
 
     def __repr__(self):
         if self.ipv4 is not None:
-            return '<Host: hostname={0}, ipv4={1}>'.format(self.hostname, self.ipv4)
+            return '<Host: hostname={0}, ipv4={1}>'.format(
+                self.hostname, self.ipv4)
         return '<Host: hostname={0}>'.format(self.hostname)
+
 
 class Parser(object):
 
