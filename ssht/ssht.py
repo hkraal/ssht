@@ -66,8 +66,9 @@ def main():     # pragma: nocover
     parser.add_argument("name", help="name of the host to connect to")
     args, unknown = parser.parse_known_args()
 
-    jsonparser = JsonParser('/Users/henk/.ssht')
-    mysqlparser = MySQLParser('/Users/henk/.ssht')
+    home_dir = os.path.expanduser('~')
+    jsonparser = JsonParser(os.path.join(home_dir, '.ssht'))
+    mysqlparser = MySQLParser(os.path.join(home_dir, '.ssht'))
     hosts = jsonparser.search(args.name) + mysqlparser.search(args.name)
     logging.info(hosts)
 
