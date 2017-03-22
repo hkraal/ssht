@@ -15,12 +15,26 @@ class TestParser:
         assert parser.get_files('.mysql') == ['test.mysql']
         assert parser.get_files('.fake') == []
 
-    def test_search(self):
+    def test_search_hostname(self):
         parser = Parser('/tmp')
         parser._hosts = [Host('host01.example.com'),
                          Host('host02.example.com')]
         assert parser.search('host01')[0].hostname == 'host01.example.com'
         assert len(parser.search('example.com')) == 2
+
+    def test_search_ipv4(self):
+        parser = Parser('/tmp')
+        parser._hosts = [Host('host01.example.com', ipv4='192.168.0.1'),
+                         Host('host02.example.com', ipv4='192.168.0.2')]
+        assert parser.search('192.168.0.1')[0].hostname == 'host01.example.com'
+        assert len(parser.search('192.168.0')) == 2
+
+    def test_search_ipv6(self):
+        parser = Parser('/tmp')
+        parser._hosts = [Host('host01.example.com', ipv6='fe80::41:dead:beef:cafe'),
+                         Host('host02.example.com', ipv6='fe80::41:dead:beef:daff')]
+        assert parser.search('dead:beef:cafe')[0].hostname == 'host01.example.com'
+        assert len(parser.search('dead:beef:')) == 2
 
 
 class TestJsonParser:
