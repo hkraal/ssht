@@ -90,8 +90,8 @@ class TestConnect:
 class TestSsht():
 
     def test_select_host(self, mocker):
-        hosts = [Host(hostname='host01.example.com'),
-                 Host(hostname='host02.example.com', user='admin')]
+        hosts = [Host(hostname='host01.example.com', ipv4='127.0.0.1'),
+                 Host(hostname='host02.example.com', ipv4='127.0.0.2', user='admin')]
 
         mocker.patch('ssht.ssht.get_answer', return_value='1')
         assert select_host(hosts).hostname == 'host01.example.com'
@@ -100,7 +100,7 @@ class TestSsht():
         mocker.patch('ssht.ssht.get_answer', return_value='2')
         assert select_host(hosts).hostname == 'host02.example.com'
         assert select_host(hosts).user == 'admin'
-        
+
         mocker.patch('ssht.ssht.get_answer', return_value='')
         assert select_host(hosts) is None
     

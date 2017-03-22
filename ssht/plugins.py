@@ -34,6 +34,13 @@ class Host(object):
             return '{0}@{1}'.format(self.user, self.hostname)
         return self.hostname
 
+    def match(self, needle):
+        for search_field in ['hostname', 'ipv4', 'ipv6']:
+            value = getattr(self, search_field, None)
+            if value is not None and needle in value:
+                return True
+        return False
+
     def __repr__(self):
         if self.ipv4 is not None:
             return '<Host: hostname={0}, ipv4={1}>'.format(
@@ -54,8 +61,15 @@ class Parser(object):
     def get_files(self, ext='.json'):
         return [x for x in os.listdir(self._path) if x.endswith(ext)]
 
-    def search(self, name):
-        return [x for x in self._hosts if name in x.hostname]
+    def search(self, needle):
+        '''
+        Return Host objects which have properties matching the needle
+        '''
+        results = []
+        for host in self._hosts:
+            if host.match(needle):
+                results.append(host)
+        return results
 
 
 class JsonParser(Parser):   # pragma: nocover
