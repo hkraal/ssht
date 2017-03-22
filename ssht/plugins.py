@@ -71,8 +71,14 @@ class Parser(object):
                 results.append(host)
         return results
 
+    def _get_file_content(self, path):  # pragma: nocover
+        content = ''
+        with open(path, 'r') as fh:
+            content = fh.read()
+        return content
 
-class JsonParser(Parser):   # pragma: nocover
+
+class JsonParser(Parser):
 
     def __init__(self, *args, **kwargs):
         super(JsonParser, self).__init__(*args, **kwargs)
@@ -86,14 +92,15 @@ class JsonParser(Parser):   # pragma: nocover
         for file_ in self._files:
             path = os.path.join(self._path, file_)
             logging.debug('Parsing "{0}"'.format(path))
-            with open(path, 'r') as fh:
-                try:
-                    d = json.loads(fh.read())
-                    logging.debug('Got: {0}'.format(d))
-                    for host in d['hosts']:
-                        self._hosts.append(Host.factory(host))
-                except json.decoder.JSONDecodeError as ex:
-                    logging.error(ex)
+            
+            try:
+                d = json.loads(self._get_file_content(path))
+                logging.debug('Got: {0}'.format(d))
+                for host in d['hosts']:
+                    self._hosts.append(Host.factory(host))
+            except ValueError as ex:    # pragma: nocover
+                print('Invalid JSON file: {0}'.format(path))
+                logging.error(ex)
 
 
 class MySQLParser(Parser):  # pragma: nocover

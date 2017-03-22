@@ -4,6 +4,7 @@ Created on 13 Jan 2017
 @author: henk
 '''
 from ssht.plugins import Parser, Host, JsonParser
+import pytest
 
 
 class TestParser:
@@ -36,10 +37,35 @@ class TestParser:
         assert parser.search('dead:beef:cafe')[0].hostname == 'host01.example.com'
         assert len(parser.search('dead:beef:')) == 2
 
+    def test_get_file_content(self):
+        pass
+
 
 class TestJsonParser:
-    pass
     
+    def test_load_invalid_data(mocker):
+        '''Ensure invalid JSON exceptions are catched properly'''
+        def _get_file_content(file_):
+            return 'not JSON encoded'
+
+        jsonparser = JsonParser('/tmp')
+        jsonparser._files = ['test.json']
+        jsonparser._get_file_content = _get_file_content
+        
+        assert len(jsonparser._hosts) == 0
+        
+
+    def test_load_valid_data(mocker):
+        def _get_file_content(file_):
+            return '{ "hosts": [{ "port": "2222", "hostname": "host01.example.com", "ipv4": "192.168.0.2", "user": "root"}] }'
+
+        jsonparser = JsonParser('/tmp')
+        jsonparser._files = ['test.json']
+        jsonparser._get_file_content = _get_file_content
+        jsonparser._load_data()
+        
+        assert jsonparser._hosts[0].hostname == 'host01.example.com'
+
 
 class TestMySQLParser:
     pass
