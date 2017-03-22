@@ -37,8 +37,19 @@ class TestParser:
         assert parser.search('dead:beef:cafe')[0].hostname == 'host01.example.com'
         assert len(parser.search('dead:beef:')) == 2
 
-    def test_get_file_content(self):
-        pass
+    def test_search_fnmatch_wildcard(self):
+        parser = Parser('/tmp')
+        parser._hosts = [Host('host01.example.com'),
+                         Host('host02.example.com')]
+        assert parser.search('host*.example.com')[0].hostname == 'host01.example.com'
+        assert len(parser.search('example.com')) == 2
+
+    def test_search_fnmatch_questionmark(self):
+        parser = Parser('/tmp')
+        parser._hosts = [Host('host01.example.com'),
+                         Host('host02.example.com')]
+        assert parser.search('host??.example.com')[0].hostname == 'host01.example.com'
+        assert len(parser.search('host??.example.com')) == 2
 
 
 class TestJsonParser:

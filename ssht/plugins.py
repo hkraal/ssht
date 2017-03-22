@@ -3,6 +3,7 @@ import logging
 import json
 
 import mysql.connector
+import fnmatch
 
 
 class Host(object):
@@ -37,7 +38,8 @@ class Host(object):
     def match(self, needle):
         for search_field in ['hostname', 'ipv4', 'ipv6']:
             value = getattr(self, search_field, None)
-            if value is not None and needle in value:
+            if value is not None and (
+                    fnmatch.fnmatch(value, needle) or needle in value):
                 return True
         return False
 
@@ -92,7 +94,7 @@ class JsonParser(Parser):
         for file_ in self._files:
             path = os.path.join(self._path, file_)
             logging.debug('Parsing "{0}"'.format(path))
-            
+
             try:
                 d = json.loads(self._get_file_content(path))
                 logging.debug('Got: {0}'.format(d))
