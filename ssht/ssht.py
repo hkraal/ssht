@@ -56,7 +56,10 @@ def select_host(hosts):
 
 
 def get_answer(text):   # pragma: nocover
-    return input(text)
+    try:
+        return input(text)
+    except SyntaxError:
+        return ''
 
 
 def get_log_level():
