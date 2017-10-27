@@ -141,10 +141,22 @@ class APIParser(Parser):
             path = os.path.join(self._path, file_)
             logging.debug('Parsing "{0}"'.format(path))
             with open(path, 'r') as fh:
-                d = json.loads(fh.read())
+                try:
+                    d = json.loads(fh.read())
+                except ValueError as ex:
+                    print('Invalid JSON file: {0}'.format(path))
+                    logging.error(ex)
                 if 'headers' not in d['config']:
                     d['config']['headers'] = {}
                 req = requests.get(d['config']['url'],
                         headers=d['config']['headers'])
-                for host in req.json()['hosts']:
+                try:
+                    res = req.json()
+                except ValueError as ex:
+                    print('Invalid JSON response for: {0}'.format(path))
+                    logging.error(ex)
+                if 'hosts' not in res:
+                    print('No hosts in JSON response for: {0}'.format(path))
+                    logging.error(ex)
+                for host in res['hosts']:
                     self._hosts.append(Host.factory(host))
