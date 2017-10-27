@@ -11,6 +11,7 @@ Current supported sources:
 
 * JSON file
 * MySQL database
+* JSON API endpoint
 
 # Installation
 
@@ -57,6 +58,17 @@ Configure sources in ~/.ssht:
       },
       "query": "SELECT hostname, port, ipv4, ipv6, user FROM servers"
     }
+
+**Define JSON API endpoint**:
+
+	{
+		"config": {
+			"url": "http://ssht-api.dev",
+			"headers": {
+				"Authentication": "bla:huk"
+			}
+		}
+	}
 
 # Usage
 
