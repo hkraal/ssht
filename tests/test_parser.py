@@ -80,3 +80,7 @@ class TestJsonParser:
 
 class TestMySQLParser:
     pass
+
+
+class TestAPIParser:
+    pass
