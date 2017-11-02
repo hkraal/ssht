@@ -1,6 +1,7 @@
 import os
 import logging
 import json
+import requests
 
 import mysql.connector
 import fnmatch
@@ -128,3 +129,34 @@ class MySQLParser(Parser):  # pragma: nocover
 
                 for row in c:
                     self._hosts.append(Host.factory(row))
+
+class APIParser(Parser):
+    def __init__(self, *args, **kwargs):
+        super(APIParser, self).__init__(*args, **kwargs)
+        self._files = self.get_files('.api')
+        self._load_data()
+
+    def _load_data(self):
+        for file_ in self._files:
+            path = os.path.join(self._path, file_)
+            logging.debug('Parsing "{0}"'.format(path))
+            with open(path, 'r') as fh:
+                try:
+                    d = json.loads(fh.read())
+                except ValueError as ex:
+                    print('Invalid JSON file: {0}'.format(path))
+                    logging.error(ex)
+                if 'headers' not in d['config']:
+                    d['config']['headers'] = {}
+                req = requests.get(d['config']['url'],
+                        headers=d['config']['headers'])
+                try:
+                    res = req.json()
+                except ValueError as ex:
+                    print('Invalid JSON response for: {0}'.format(path))
+                    logging.error(ex)
+                if 'hosts' not in res:
+                    print('No hosts in JSON response for: {0}'.format(path))
+                    logging.error(ex)
+                for host in res['hosts']:
+                    self._hosts.append(Host.factory(host))

@@ -8,7 +8,7 @@ import subprocess
 import shlex
 import logging
 
-from .plugins import JsonParser, MySQLParser
+from .plugins import JsonParser, MySQLParser, APIParser
 import os
 import sys
 
@@ -79,7 +79,9 @@ def main():     # pragma: nocover
         home_dir = os.path.expanduser('~')
         jsonparser = JsonParser(os.path.join(home_dir, '.ssht'))
         mysqlparser = MySQLParser(os.path.join(home_dir, '.ssht'))
-        hosts = jsonparser.search(args.name) + mysqlparser.search(args.name)
+        apiparser = APIParser(os.path.join(home_dir, '.ssht'))
+        hosts = jsonparser.search(args.name) + mysqlparser.search(args.name) \
+                + apiparser.search(args.name)
         logging.info(hosts)
 
         host = None
