@@ -5,7 +5,7 @@ setup(name='ssht',
     description='SSH client wrapper for easily connecting to hosts',
     long_description='',
     classifiers=[
-        'Development Status :: 3 - Alpha',
+        'Development Status :: 4 - Beta',
         'Intended Audience :: System Administrators',
         'License :: OSI Approved :: MIT License',
         'Programming Language :: Python :: 2.6',
