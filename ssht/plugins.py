@@ -130,6 +130,7 @@ class MySQLParser(Parser):  # pragma: nocover
                 for row in c:
                     self._hosts.append(Host.factory(row))
 
+
 class APIParser(Parser):
     def __init__(self, *args, **kwargs):
         super(APIParser, self).__init__(*args, **kwargs)
@@ -148,8 +149,9 @@ class APIParser(Parser):
                     logging.error(ex)
                 if 'headers' not in d['config']:
                     d['config']['headers'] = {}
-                req = requests.get(d['config']['url'],
-                        headers=d['config']['headers'])
+                req = requests.get(
+                    d['config']['url'],
+                    headers=d['config']['headers'])
                 try:
                     res = req.json()
                 except ValueError as ex:

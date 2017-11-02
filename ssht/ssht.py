@@ -80,8 +80,10 @@ def main():     # pragma: nocover
         jsonparser = JsonParser(os.path.join(home_dir, '.ssht'))
         mysqlparser = MySQLParser(os.path.join(home_dir, '.ssht'))
         apiparser = APIParser(os.path.join(home_dir, '.ssht'))
-        hosts = jsonparser.search(args.name) + mysqlparser.search(args.name) \
-                + apiparser.search(args.name)
+
+        hosts = jsonparser.search(args.name)
+        hosts.extend(mysqlparser.search(args.name))
+        hosts.extend(apiparser.search(args.name))
         logging.info(hosts)
 
         host = None
