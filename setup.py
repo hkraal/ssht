@@ -25,6 +25,7 @@ setup(name='ssht',
                  'ssht'},
     install_requires=[
         'mysql-connector==2.1.4',
+        'requests',
     ],
     include_package_data=True,
     zip_safe=False,
