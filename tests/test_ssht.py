@@ -3,14 +3,12 @@ Created on 7 Jan 2017
 
 @author: henk
 '''
-import subprocess
-
-from ssht.ssht import ssh_connect, select_host, get_log_level
-from ssht.plugins import Host
-import ssht
 import logging
 import os
-from os import unsetenv
+import subprocess
+
+from ssht.plugins import Host
+from ssht.ssht import ssh_connect, select_host, get_log_level
 
 
 class TestConnect:

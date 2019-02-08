@@ -4,13 +4,13 @@ Created on 17 Dec 2016
 @author: Henk Kraal
 '''
 import argparse
-import subprocess
-import shlex
 import logging
+import os
+import shlex
+import subprocess
+import sys
 
 from .plugins import JsonParser, MySQLParser, APIParser
-import os
-import sys
 
 
 def ssh_connect(host, args):

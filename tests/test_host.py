@@ -3,8 +3,9 @@ Created on 13 Jan 2017
 
 @author: henk
 '''
-from ssht.plugins import Host
 import pytest
+
+from ssht.plugins import Host
 
 
 class TestHost:

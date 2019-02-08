@@ -4,7 +4,6 @@ Created on 13 Jan 2017
 @author: henk
 '''
 from ssht.plugins import Parser, Host, JsonParser
-import pytest
 
 
 class TestParser:
