@@ -10,9 +10,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Allow wildcards in search string.
 - Search multiple object properties.
 - Support for JSON API endpoint.
+- Support for Python 3.6
 
 ### Fixed
 - Invalid JSON trows exception.
+
+### Removed
+- Removed support for Python 2.6
+- Removed support for Python 3.3
 
 
 [Unreleased]: https://github.com/hkraal/ssht/compare/v0.7.2a0...master
