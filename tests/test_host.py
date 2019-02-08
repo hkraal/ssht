@@ -3,8 +3,9 @@ Created on 13 Jan 2017
 
 @author: henk
 '''
-from ssht.plugins import Host
 import pytest
+
+from ssht.plugins import Host
 
 
 class TestHost:
@@ -33,4 +34,4 @@ class TestHost:
     def test_host_repr(self):
         assert repr(Host(
             hostname='host01.example.com')) == '<Host: hostname=host01.example.com>'
-                         ipv4='192.168.0.2')) == '<Host: hostname=host01.example.com, ipv4=192.168.0.2>'
+        ipv4 = '192.168.0.2')) == '<Host: hostname=host01.example.com, ipv4=192.168.0.2>'
