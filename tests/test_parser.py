@@ -32,39 +32,43 @@ class TestParser:
 
     def test_search_ipv6(self):
         parser = Parser('/tmp')
-        parser._hosts = [Host('host01.example.com', ipv6='fe80::41:dead:beef:cafe'),
-                         Host('host02.example.com', ipv6='fe80::41:dead:beef:daff')]
-        assert parser.search('dead:beef:cafe')[0].hostname == 'host01.example.com'
+        parser._hosts = [
+            Host('host01.example.com', ipv6='fe80::41:dead:beef:cafe'),
+            Host('host02.example.com', ipv6='fe80::41:dead:beef:daff')]
+        assert parser.search('dead:beef:cafe')[
+                   0].hostname == 'host01.example.com'
         assert len(parser.search('dead:beef:')) == 2
 
     def test_search_fnmatch_wildcard(self):
         parser = Parser('/tmp')
         parser._hosts = [Host('host01.example.com'),
                          Host('host02.example.com')]
-        assert parser.search('host*.example.com')[0].hostname == 'host01.example.com'
+        assert parser.search('host*.example.com')[
+                   0].hostname == 'host01.example.com'
         assert len(parser.search('example.com')) == 2
 
     def test_search_fnmatch_questionmark(self):
         parser = Parser('/tmp')
         parser._hosts = [Host('host01.example.com'),
                          Host('host02.example.com')]
-        assert parser.search('host??.example.com')[0].hostname == 'host01.example.com'
+        assert parser.search('host??.example.com')[
+                   0].hostname == 'host01.example.com'
         assert len(parser.search('host??.example.com')) == 2
 
 
 class TestJsonParser:
-    
+
     def test_load_invalid_data(mocker):
         '''Ensure invalid JSON exceptions are catched properly'''
+
         def _get_file_content(file_):
             return 'not JSON encoded'
 
         jsonparser = JsonParser('/tmp')
         jsonparser._files = ['test.json']
         jsonparser._get_file_content = _get_file_content
-        
+
         assert len(jsonparser._hosts) == 0
-        
 
     def test_load_valid_data(mocker):
         def _get_file_content(file_):
@@ -74,7 +78,7 @@ class TestJsonParser:
         jsonparser._files = ['test.json']
         jsonparser._get_file_content = _get_file_content
         jsonparser._load_data()
-        
+
         assert jsonparser._hosts[0].hostname == 'host01.example.com'
 
 

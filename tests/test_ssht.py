@@ -18,7 +18,7 @@ class TestConnect:
     def test_hostname(self, mocker):
         mocker.patch('subprocess.call')
         ssh_connect(Host(hostname='host01.example.com'),
-            [])
+                    [])
         subprocess.call.assert_called_with(
             ['ssh', 'host01.example.com'],
         )
@@ -27,7 +27,7 @@ class TestConnect:
         mocker.patch('subprocess.call')
         ssh_connect(Host(hostname='host01.example.com',
                          ipv4='192.168.0.1'),
-            [])
+                    [])
         subprocess.call.assert_called_with(
             ['ssh', '192.168.0.1'],
         )
@@ -91,7 +91,8 @@ class TestSsht():
 
     def test_select_host(self, mocker):
         hosts = [Host(hostname='host01.example.com', ipv4='127.0.0.1'),
-                 Host(hostname='host02.example.com', ipv4='127.0.0.2', user='admin')]
+                 Host(hostname='host02.example.com', ipv4='127.0.0.2',
+                      user='admin')]
 
         mocker.patch('ssht.ssht.get_answer', return_value='1')
         assert select_host(hosts).hostname == 'host01.example.com'
@@ -103,7 +104,7 @@ class TestSsht():
 
         mocker.patch('ssht.ssht.get_answer', return_value='')
         assert select_host(hosts) is None
-    
+
     def test_get_log_level_default(self):
         os.unsetenv("SSHT_DEBUG")
         assert logging.WARNING == get_log_level()
@@ -111,4 +112,3 @@ class TestSsht():
     def test_get_log_level_debug(self):
         os.environ["SSHT_DEBUG"] = '1'
         assert logging.DEBUG == get_log_level()
-        
