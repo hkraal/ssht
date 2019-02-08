@@ -1,14 +1,13 @@
 from setuptools import setup
 
 setup(name='ssht',
-      version='0.8.1',
+      version='0.9.0',
       description='SSH client wrapper for easily connecting to hosts',
       long_description='',
       classifiers=[
           'Development Status :: 4 - Beta',
           'Intended Audience :: System Administrators',
           'License :: OSI Approved :: MIT License',
-          'Programming Language :: Python :: 2.6',
           'Programming Language :: Python :: 2.7',
           'Programming Language :: Python :: 3.4',
           'Programming Language :: Python :: 3.5',
