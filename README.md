@@ -4,7 +4,7 @@ SSH client wrapper for easily connecting to hosts
 [![Build Status](https://travis-ci.org/hkraal/ssht.svg?branch=master)](https://travis-ci.org/hkraal/ssht)
 [![Coverage Status](https://coveralls.io/repos/github/hkraal/ssht/badge.svg?branch=master)](https://coveralls.io/github/hkraal/ssht?branch=master)
 [![Requirements Status](https://requires.io/github/hkraal/ssht/requirements.svg?branch=master)](https://requires.io/github/hkraal/ssht/requirements/?branch=master)
-
+![](https://img.shields.io/pypi/pyversions/ssht.svg?style=flat)
 
 This wrapper for the well known `ssh` client makes it possible to connect to the right server with just typing a part of the host name. The external sources are queried using the search term and those matching the string will be presented as an option.
 

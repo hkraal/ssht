@@ -1,10 +1,10 @@
-import os
-import logging
+import fnmatch
 import json
-import requests
+import logging
+import os
 
 import mysql.connector
-import fnmatch
+import requests
 
 
 class Host(object):
