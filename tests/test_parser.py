@@ -71,8 +71,9 @@ class TestJsonParser:
 
     def test_load_valid_data(mocker):
         def _get_file_content(file_):
-            return '{ "hosts": [{ "port": "2222", "hostname": "host01.example.com", \
-            "ipv4": "192.168.0.2", "user": "root"}] }'
+            return '{ "hosts": [{ "port": "2222", "hostname": \
+            "host01.example.com", "ipv4": "192.168.0.2", \
+            "user": "root"}] }'
 
         jsonparser = JsonParser('/tmp')
         jsonparser._files = ['test.json']
