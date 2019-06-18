@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - Invalid JSON trows exception.
+- Depency on missing mysql-connector version.
 
 ### Removed
 - Removed support for Python 2.6

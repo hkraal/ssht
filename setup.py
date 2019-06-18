@@ -1,7 +1,7 @@
 from setuptools import setup
 
 setup(name='ssht',
-      version='0.9.0',
+      version='0.9.1',
       description='SSH client wrapper for easily connecting to hosts',
       long_description='',
       classifiers=[
@@ -22,7 +22,7 @@ setup(name='ssht',
       packages=['ssht'],
       package_dir={'ssht': 'ssht'},
       install_requires=[
-          'mysql-connector==2.1.4',
+          'mysql-connector>=2.1.4',
           'requests',
       ],
       include_package_data=True,
