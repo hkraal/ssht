@@ -1,16 +1,11 @@
-'''
-Created on 17 Dec 2016
-
-@author: Henk Kraal
-'''
 import argparse
+import json
 import logging
 import os
 import shlex
 import subprocess
 import sys
-
-from .plugins import JsonParser, MySQLParser, APIParser
+from importlib import import_module
 
 
 def ssh_connect(host, args):
@@ -55,7 +50,7 @@ def select_host(hosts):
         return
 
 
-def get_answer(text):   # pragma: nocover
+def get_answer(text):  # pragma: nocover
     try:
         return input(text)
     except SyntaxError:
@@ -68,22 +63,49 @@ def get_log_level():
     return logging.WARNING
 
 
-def main():     # pragma: nocover
+def main():  # pragma: nocover
     try:
         logging.basicConfig(level=get_log_level())
 
-        parser = argparse.ArgumentParser()
-        parser.add_argument("name", help="name of the host to connect to")
-        args, unknown = parser.parse_known_args()
+        arg_parser = argparse.ArgumentParser()
+        arg_parser.add_argument("name", help="name of the host to connect to")
+        args, unknown = arg_parser.parse_known_args()
 
         home_dir = os.path.expanduser('~')
-        jsonparser = JsonParser(os.path.join(home_dir, '.ssht'))
-        mysqlparser = MySQLParser(os.path.join(home_dir, '.ssht'))
-        apiparser = APIParser(os.path.join(home_dir, '.ssht'))
+        config_path = os.path.join(home_dir, '.ssht', 'config.json')
 
-        hosts = jsonparser.search(args.name)
-        hosts.extend(mysqlparser.search(args.name))
-        hosts.extend(apiparser.search(args.name))
+        # Read generic config file.
+        config = {}
+        try:
+            with open(config_path, 'r') as fh:
+                config = json.loads(fh.read())
+        except FileNotFoundError as e:
+            logging.debug(f'Config file {config_path} is missing')
+        except ValueError as ex:
+            logging.debug(f'Config file {config_path} contains invalid JSON')
+
+        # Define default parsers for backwards compatibility.
+        parsers = [
+            "ssht.plugins.JsonParser",
+            "ssht.plugins.MySQLParser",
+            "ssht.plugins.APIParser",
+        ]
+        # Use configured parsers if defined.
+        if 'parsers' in config:
+            logging.debug('Using configured parsers')
+            parsers = config['parsers']
+
+        hosts = []
+        for module_path in parsers:
+            # Split module and class name.
+            _module = '.'.join(module_path.split('.')[:-1])
+            _class = module_path.split('.')[-1:][0]
+
+            # Dynamically import and execute the parsers.
+            parser = getattr(import_module(_module), _class)
+            p = parser(os.path.join(home_dir, '.ssht'))
+            hosts.extend(p.search(args.name))
+
         logging.info(hosts)
 
         host = None
@@ -100,3 +122,7 @@ def main():     # pragma: nocover
     except KeyboardInterrupt as ex:
         print()
         sys.exit(0)
+
+
+if __name__ == '__main__':
+    main()

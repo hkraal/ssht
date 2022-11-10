@@ -8,14 +8,7 @@ import requests
 
 
 class Host(object):
-
-    def __init__(
-            self,
-            hostname,
-            port=None,
-            ipv4=None,
-            ipv6=None,
-            user=None):
+    def __init__(self, hostname, port=None, ipv4=None, ipv6=None, user=None):
         self.hostname = hostname
         self.port = port if port else None
         self.ipv4 = ipv4 if ipv4 else None
@@ -40,19 +33,18 @@ class Host(object):
         for search_field in ['hostname', 'ipv4', 'ipv6']:
             value = getattr(self, search_field, None)
             if value is not None and (
-                    fnmatch.fnmatch(value, needle) or needle in value):
+                fnmatch.fnmatch(value, needle) or needle in value
+            ):
                 return True
         return False
 
     def __repr__(self):
         if self.ipv4 is not None:
-            return '<Host: hostname={0}, ipv4={1}>'.format(
-                self.hostname, self.ipv4)
+            return '<Host: hostname={0}, ipv4={1}>'.format(self.hostname, self.ipv4)
         return '<Host: hostname={0}>'.format(self.hostname)
 
 
 class Parser(object):
-
     def __init__(self, path):
         '''
 
@@ -82,7 +74,6 @@ class Parser(object):
 
 
 class JsonParser(Parser):
-
     def __init__(self, *args, **kwargs):
         super(JsonParser, self).__init__(*args, **kwargs)
         self._files = self.get_files(ext='.json')
@@ -99,15 +90,15 @@ class JsonParser(Parser):
             try:
                 d = json.loads(self._get_file_content(path))
                 logging.debug('Got: {0}'.format(d))
+                if not 'hosts' in d:
+                    return
                 for host in d['hosts']:
                     self._hosts.append(Host.factory(host))
-            except ValueError as ex:    # pragma: nocover
-                print('Invalid JSON file: {0}'.format(path))
-                logging.error(ex)
+            except ValueError as ex:  # pragma: nocover
+                logging.info(f'Config file {path} contains invalid JSON')
 
 
 class MySQLParser(Parser):  # pragma: nocover
-
     def __init__(self, *args, **kwargs):
         super(MySQLParser, self).__init__(*args, **kwargs)
         self._files = self.get_files(ext='.mysql')
@@ -149,9 +140,7 @@ class APIParser(Parser):
                     logging.error(ex)
                 if 'headers' not in d['config']:
                     d['config']['headers'] = {}
-                req = requests.get(
-                    d['config']['url'],
-                    headers=d['config']['headers'])
+                req = requests.get(d['config']['url'], headers=d['config']['headers'])
                 try:
                     res = req.json()
                 except ValueError as ex:

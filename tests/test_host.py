@@ -9,14 +9,12 @@ from ssht.plugins import Host
 
 
 class TestHost:
-
     def test_default(self):
         x = Host(hostname='host01.example.com')
         assert x.display == 'host01.example.com'
 
     def test_user(self):
-        x = Host(hostname='host01.example.com',
-                 user='admin')
+        x = Host(hostname='host01.example.com', user='admin')
         assert x.display == 'admin@host01.example.com'
 
     def test_factory_dict(self):
@@ -32,9 +30,11 @@ class TestHost:
             Host.factory('host01.example.com')
 
     def test_host_repr(self):
-        assert repr(
-            Host(hostname='host01.example.com')
-        ) == '<Host: hostname=host01.example.com>'
-        assert repr(
-            Host(hostname='host01.example.com', ipv4='192.168.0.2')
-        ) == '<Host: hostname=host01.example.com, ipv4=192.168.0.2>'
+        assert (
+            repr(Host(hostname='host01.example.com'))
+            == '<Host: hostname=host01.example.com>'
+        )
+        assert (
+            repr(Host(hostname='host01.example.com', ipv4='192.168.0.2'))
+            == '<Host: hostname=host01.example.com, ipv4=192.168.0.2>'
+        )

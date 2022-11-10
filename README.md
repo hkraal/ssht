@@ -13,16 +13,41 @@ Current supported sources:
 * JSON file
 * MySQL database
 * JSON API endpoint
+* Custom parser class
 
-# Installation
+### Installation
 
 Install ssht using pip:
 
-    pip install ssht
+    pip3 install ssht
 
 or if you want the latest version:
 
-    pip install https://github.com/hkraal/ssht/archive/master.zip
+    pip3 install https://github.com/hkraal/ssht/archive/master.zip
+
+
+### Usage
+
+    ssht [-h] name [-4] [-6] 
+    
+    positional arguments:
+      name        name of the host to connect to
+    
+    optional arguments:
+      -h, --help  show this help message and exit
+      -4          connect using ipv4 (skip dns if ipv4 address is defined)
+      -6          connect using ipv6 (skip dns of ipv6 address is defined)
+
+Example of a connection
+
+    $ ssht host01
+    1) root@host01.exmaple.com
+    2) host01.exmaple.com
+    Connect to: 1
+    Connecting to "host01.example.com"
+    root@host01:~$
+
+### Configuration
 
 Create ssht folder in home directory
 
@@ -71,24 +96,33 @@ Configure sources in ~/.ssht:
 		}
 	}
 
-# Usage
+**Define custom class**:
 
-    ssht [-h] name [-4] [-6] 
-    
-    positional arguments:
-      name        name of the host to connect to
-    
-    optional arguments:
-      -h, --help  show this help message and exit
-      -4          connect using ipv4 (skip dns if ipv4 address is defined)
-      -6          connect using ipv6 (skip dns of ipv6 address is defined)
+1) Create a Python package containing your class
 
-Example of a connection
+```
+from ssht.plugins import Parser, Host
 
-    $ ssht host01
-    1) root@host01.exmaple.com
-    2) host01.exmaple.com
-    Connect to: 1
-    Connecting to "host01.example.com"
-    root@host01:~$
 
+class ExampleParser(Parser):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._files = self.get_files('.custom')
+
+    def search(self, needle):
+        return [
+            Host(hostname='host01.example.com', ipv4='192.168.0.2'),
+        ]
+```
+
+2) Enable your class in `~/.ssht/config.json`
+
+```
+{
+    "parsers":
+    [
+        "ssht.plugins.JsonParser",
+        "ssht_provider.ExampleParser"
+    ]
+}
+```
