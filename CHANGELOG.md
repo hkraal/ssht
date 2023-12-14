@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Poetry for dependency management.
 - Dependabot for dependency updates.
+- GitHub action for testing.
 
 ### Removed
 - Support for Python versions below 3.8
