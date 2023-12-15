@@ -1,0 +1,84 @@
+---
+repos:
+  - repo: local
+    hooks:
+      - id: black
+        name: Format using black
+        language: system
+        types: [python]
+        entry: poetry run black
+        require_serial: true
+
+      - id: blacken-docs
+        name: Format documentation examples using black
+        language: system
+        files: '\.(rst|md|markdown|py|tex)$'
+        entry: poetry run blacken-docs
+        require_serial: true
+
+      - id: codespell
+        name: Check code for common misspellings
+        language: system
+        types: [text]
+        exclude: ^poetry\.lock$
+        entry: poetry run codespell
+        args: [--ignore-words=.codespell-ignore]
+
+      - id: debug-statements
+        name: Debug Statements and imports (Python)
+        language: system
+        types: [python]
+        entry: poetry run debug-statement-hook
+
+      - id: end-of-file-fixer
+        name: Fix End of Files
+        language: system
+        types: [text]
+        entry: poetry run end-of-file-fixer
+        stages: [commit, push, manual]
+
+      - id: fix-byte-order-marker
+        name: Fix UTF-8 byte order marker
+        language: system
+        types: [text]
+        entry: poetry run fix-byte-order-marker
+
+      - id: flake8
+        name: Enforcing style guide with flake8
+        language: system
+        types: [python]
+        entry: poetry run flake8
+        require_serial: true
+
+      - id: isort
+        name: Sort all imports with isort
+        language: system
+        types: [python]
+        entry: poetry run isort
+
+      - id: pylint
+        name: Starring code with pylint
+        language: system
+        types: [python]
+        entry: poetry run pylint
+
+      - id: pytest
+        name: Running tests and test coverage with pytest
+        language: system
+        types: [python]
+        entry: poetry run pytest --cov ssht tests
+        pass_filenames: false
+
+      - id: pyupgrade
+        name: Checking for upgradable syntax with pyupgrade
+        language: system
+        types: [python]
+        entry: poetry run pyupgrade
+        args: [--py311-plus, --keep-runtime-typing]
+
+      - id: trailing-whitespace
+        name: Trim Trailing Whitespace
+        language: system
+        types: [text]
+        entry: poetry run trailing-whitespace-fixer
+        stages: [commit, push, manual]
