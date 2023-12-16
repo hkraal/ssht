@@ -134,7 +134,11 @@ def main():
             _class = module_path.split(".")[-1:][0]
 
             # Dynamically import and execute the parsers.
-            parser = getattr(import_module(_module), _class)
+            try:
+                parser = getattr(import_module(_module), _class)
+            except ImportError as e:
+                logging.error(f"Error loading {module_path}: {e}")
+                continue
             p = parser(os.path.join(home_dir, ".ssht"))
             hosts.extend(p.search(args.name))
 
