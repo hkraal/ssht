@@ -10,14 +10,11 @@ from importlib import import_module
 
 def ssh_connect(host, args):
     """
-
+    Assemble SSH command and run ssh using subprocess.
 
     Args:
-        host:
-        args:
-
-    Returns:
-
+        host: Host object to connect to.
+        args: Arguments which are not known by ssht and should be passed along to ssh.
     """
     logging.debug(f"args = {args}")
 
@@ -48,6 +45,15 @@ def ssh_connect(host, args):
 
 
 def select_host(hosts):
+    """
+    Print the list of hosts with a reference number from which the user can choose.
+
+    Args:
+        hosts: List of Host objects.
+
+    Returns:
+        Selected host.
+    """
     for idx, host in enumerate(hosts):
         if hasattr(host, "user") and host.user is not None:
             print(f"{idx + 1}) {host.user}@{host.hostname}")
@@ -56,11 +62,20 @@ def select_host(hosts):
     option = get_answer("Connect to: ")
     try:
         return hosts[int(option) - 1]
-    except ValueError as ex:
+    except ValueError:
         return
 
 
-def get_answer(text):  # pragma: nocover
+def get_answer(text: str) -> str:
+    """
+    Get input from user.
+
+    Args:
+        text: The text to display before the input.
+
+    Returns:
+        The users input or an empty string.
+    """
     try:
         return input(text)
     except SyntaxError:
@@ -68,12 +83,19 @@ def get_answer(text):  # pragma: nocover
 
 
 def get_log_level():
+    """
+    Get the loglevel depending on debugging being enabled or not.
+
+    Returns:
+        Log level
+    """
     if os.getenv("SSHT_DEBUG", None):
         return logging.DEBUG
     return logging.WARNING
 
 
-def main():  # pragma: nocover
+def main():
+    """Get and filter hosts based on arguments."""
     try:
         logging.basicConfig(level=get_log_level())
 
@@ -89,10 +111,10 @@ def main():  # pragma: nocover
         try:
             with open(config_path) as fh:
                 config = json.loads(fh.read())
-        except FileNotFoundError as e:
+        except FileNotFoundError:
             logging.debug(f"Config file {config_path} is missing")
         except ValueError as ex:
-            logging.debug(f"Config file {config_path} contains invalid JSON")
+            logging.debug(f"Config file {config_path} invalid: {ex}")
 
         # Define default parsers for backwards compatibility.
         parsers = [
@@ -129,7 +151,7 @@ def main():  # pragma: nocover
             sys.exit(0)
 
         ssh_connect(host, unknown)
-    except KeyboardInterrupt as ex:
+    except KeyboardInterrupt:
         print()
         sys.exit(0)
 
