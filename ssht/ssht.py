@@ -16,7 +16,7 @@ def ssh_connect(host, args):
         host: Host object to connect to.
         args: Arguments which are not known by ssht and should be passed along to ssh.
     """
-    logging.debug(f"args = {args}")
+    logging.debug("args = %s", args)
 
     # Connect to IPv6 if forced
     if hasattr(host, "ipv6") and host.ipv6 and "-6" in args:
@@ -30,7 +30,7 @@ def ssh_connect(host, args):
     else:
         ssh_cmds = shlex.split(f"ssh {host.hostname}")
         print(f'Connecting to "{host.hostname}"')
-    logging.debug(f"ssh_cmds = {ssh_cmds}")
+    logging.debug("ssh_cmds = %s", ssh_cmds)
 
     # Connect to host port
     if hasattr(host, "port") and host.port is not None and "-p" not in args:
@@ -40,7 +40,7 @@ def ssh_connect(host, args):
     if hasattr(host, "user") and host.user is not None and "-l" not in args:
         ssh_cmds += shlex.split(f"-l {host.user}")
 
-    logging.debug(f"ssh_cmds = {ssh_cmds + args}")
+    logging.debug("ssh_cmds = %s %s", ssh_cmds, args)
     subprocess.call(ssh_cmds + args)
 
 
@@ -63,7 +63,7 @@ def select_host(hosts):
     try:
         return hosts[int(option) - 1]
     except ValueError:
-        return
+        return None
 
 
 def get_answer(text: str) -> str:
@@ -94,7 +94,7 @@ def get_log_level():
     return logging.WARNING
 
 
-def main():
+def main():  # pylint: disable=too-many-locals
     """Get and filter hosts based on arguments."""
     try:
         logging.basicConfig(level=get_log_level())
@@ -109,12 +109,12 @@ def main():
         # Read generic config file.
         config = {}
         try:
-            with open(config_path) as fh:
+            with open(config_path, encoding="utf8") as fh:
                 config = json.loads(fh.read())
         except FileNotFoundError:
-            logging.debug(f"Config file {config_path} is missing")
-        except ValueError as ex:
-            logging.debug(f"Config file {config_path} invalid: {ex}")
+            logging.debug("Config file %s is missing", config_path)
+        except ValueError as e:
+            logging.debug("Config file %s invalid: %s", config_path, e)
 
         # Define default parsers for backwards compatibility.
         parsers = [
@@ -137,7 +137,7 @@ def main():
             try:
                 parser = getattr(import_module(_module), _class)
             except ImportError as e:
-                logging.error(f"Error loading {module_path}: {e}")
+                logging.error("Error loading %s: %s", module_path, e)
                 continue
             p = parser(os.path.join(home_dir, ".ssht"))
             hosts.extend(p.search(args.name))
