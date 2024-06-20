@@ -1,36 +1,21 @@
----
 version: 2
 updates:
-  # Weekly version updates.
-  - package-ecosystem: "pip"
-    directory: "/"
-    schedule:
-      interval: "weekly"
-      day: "tuesday"
-      time: "04:00"
-    groups:
-      patches-and-minor-upgrades:
-        update-types:
-          - "minor"
-          - "patch"
-  - package-ecosystem: "pip"
-    directory: "/.github/workflows"
-    schedule:
-      interval: daily
-      time: "03:30"
-    groups:
-      patches-and-minor-upgrades:
-        update-types:
-          - "minor"
-          - "patch"
-  - package-ecosystem: "github-actions"
-    directory: "/"
-    schedule:
-      interval: "weekly"
-      day: "tuesday"
-      time: "04:00"
-    groups:
-      patches-and-minor-upgrades:
-        update-types:
-          - "minor"
-          - "patch"
+# Weekly version updates.
+- package-ecosystem: "pip"
+  directory: "/"
+  schedule:
+    interval: "weekly"
+  groups:
+    patches-and-minor-upgrades:
+      update-types:
+        - "minor"
+        - "patch"
+- package-ecosystem: "github-actions"
+  directory: "/"
+  schedule:
+    interval: "weekly"
+  groups:
+    patches-and-minor-upgrades:
+      update-types:
+        - "minor"
+        - "patch"
