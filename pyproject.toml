@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "ssht"
-version = "1.0.0"
+version = "1.0.1"
 description = "SSH client wrapper for easily connecting to hosts"
 authors = ["Henk Kraal <hkraal@users.noreply.github.com>"]
 classifiers = [
