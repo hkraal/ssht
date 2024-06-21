@@ -6,6 +6,8 @@ import os
 import mysql.connector
 import requests
 
+logger = logging.getLogger(__name__)
+
 
 class Host(object):
     def __init__(self, hostname, port=None, ipv4=None, ipv6=None, user=None):
@@ -80,22 +82,22 @@ class JsonParser(Parser):
         self._load_data()
 
     def _load_data(self):
-        '''
+        """
         Load parser specific data files
-        '''
+        """
         for file_ in self._files:
             path = os.path.join(self._path, file_)
-            logging.debug('Parsing "{0}"'.format(path))
+            logger.debug('Parsing "{0}"'.format(path))
 
             try:
                 d = json.loads(self._get_file_content(path))
-                logging.debug('Got: {0}'.format(d))
+                logger.debug('Got: {0}'.format(d))
                 if not 'hosts' in d:
                     return
                 for host in d['hosts']:
                     self._hosts.append(Host.factory(host))
             except ValueError as ex:  # pragma: nocover
-                logging.info(f'Config file {path} contains invalid JSON')
+                logger.info(f'Config file {path} contains invalid JSON')
 
 
 class MySQLParser(Parser):  # pragma: nocover
@@ -110,10 +112,10 @@ class MySQLParser(Parser):  # pragma: nocover
         '''
         for file_ in self._files:
             path = os.path.join(self._path, file_)
-            logging.debug('Parsing "{0}"'.format(path))
+            logger.debug('Parsing "{0}"'.format(path))
             with open(path, 'r') as fh:
                 d = json.loads(fh.read())
-                logging.debug('Got: {0}'.format(d))
+                logger.debug('Got: {0}'.format(d))
                 conn = mysql.connector.connect(**d['config'])
                 c = conn.cursor()
                 c.execute(d['query'])
@@ -131,23 +133,21 @@ class APIParser(Parser):
     def _load_data(self):
         for file_ in self._files:
             path = os.path.join(self._path, file_)
-            logging.debug('Parsing "{0}"'.format(path))
+            logger.debug('Parsing "{0}"'.format(path))
             with open(path, 'r') as fh:
                 try:
                     d = json.loads(fh.read())
                 except ValueError as ex:
                     print('Invalid JSON file: {0}'.format(path))
-                    logging.error(ex)
+                    logger.error(ex)
                 if 'headers' not in d['config']:
                     d['config']['headers'] = {}
                 req = requests.get(d['config']['url'], headers=d['config']['headers'])
                 try:
                     res = req.json()
                 except ValueError as ex:
-                    print('Invalid JSON response for: {0}'.format(path))
-                    logging.error(ex)
+                    logger.error('Error loading JSON response from {0}'.format(path))
                 if 'hosts' not in res:
-                    print('No hosts in JSON response for: {0}'.format(path))
-                    logging.error(ex)
+                    logger.info('No hosts found in {0}'.format(path))
                 for host in res['hosts']:
                     self._hosts.append(Host.factory(host))

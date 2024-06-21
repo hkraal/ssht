@@ -8,8 +8,18 @@ import sys
 from importlib import import_module
 
 
+def get_log_level():
+    if os.getenv('SSHT_DEBUG', None):
+        return logging.DEBUG
+    return logging.WARNING
+
+
+logging.basicConfig(level=get_log_level())
+logger = logging.getLogger("ssht")
+
+
 def ssh_connect(host, args):
-    logging.debug('args = {0}'.format(args))
+    logger.debug('args = {0}'.format(args))
 
     # Connect to IPv6 if forced
     if hasattr(host, 'ipv6') and host.ipv6 and '-6' in args:
@@ -23,7 +33,7 @@ def ssh_connect(host, args):
     else:
         ssh_cmds = shlex.split('ssh {0}'.format(host.hostname))
         print('Connecting to "{0}"'.format(host.hostname))
-    logging.debug('ssh_cmds = {0}'.format(ssh_cmds))
+    logger.debug('ssh_cmds = {0}'.format(ssh_cmds))
 
     # Connect to host port
     if hasattr(host, 'port') and host.port is not None and '-p' not in args:
@@ -33,7 +43,7 @@ def ssh_connect(host, args):
     if hasattr(host, 'user') and host.user is not None and '-l' not in args:
         ssh_cmds += shlex.split('-l {0}'.format(host.user))
 
-    logging.debug('ssh_cmds = {0}'.format(ssh_cmds + args))
+    logger.debug('ssh_cmds = {0}'.format(ssh_cmds + args))
     subprocess.call(ssh_cmds + args)
 
 
@@ -57,16 +67,8 @@ def get_answer(text):  # pragma: nocover
         return ''
 
 
-def get_log_level():
-    if os.getenv('SSHT_DEBUG', None):
-        return logging.DEBUG
-    return logging.WARNING
-
-
 def main():  # pragma: nocover
     try:
-        logging.basicConfig(level=get_log_level())
-
         arg_parser = argparse.ArgumentParser()
         arg_parser.add_argument("name", help="name of the host to connect to")
         args, unknown = arg_parser.parse_known_args()
@@ -77,12 +79,13 @@ def main():  # pragma: nocover
         # Read generic config file.
         config = {}
         try:
+            logger.debug(f"Reading config {config_path}")
             with open(config_path, 'r') as fh:
                 config = json.loads(fh.read())
         except FileNotFoundError as e:
-            logging.debug(f'Config file {config_path} is missing')
+            logger.debug(f'Config file {config_path} is missing')
         except ValueError as ex:
-            logging.debug(f'Config file {config_path} contains invalid JSON')
+            logger.debug(f'Config file {config_path} contains invalid JSON')
 
         # Define default parsers for backwards compatibility.
         parsers = [
@@ -92,8 +95,8 @@ def main():  # pragma: nocover
         ]
         # Use configured parsers if defined.
         if 'parsers' in config:
-            logging.debug('Using configured parsers')
             parsers = config['parsers']
+            logger.debug(f"Loading parsers {parsers}")
 
         hosts = []
         for module_path in parsers:
@@ -106,7 +109,7 @@ def main():  # pragma: nocover
             p = parser(os.path.join(home_dir, '.ssht'))
             hosts.extend(p.search(args.name))
 
-        logging.info(hosts)
+        logger.info(hosts)
 
         host = None
         if len(hosts) == 1:
