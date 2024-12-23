@@ -6,10 +6,11 @@ import shlex
 import subprocess
 import sys
 from importlib import import_module
+from shutil import which
 
 
 def get_log_level():
-    if os.getenv('SSHT_DEBUG', None):
+    if os.getenv("SSHT_DEBUG", None):
         return logging.DEBUG
     return logging.WARNING
 
@@ -19,44 +20,70 @@ logger = logging.getLogger("ssht")
 
 
 def ssh_connect(host, args):
-    logger.debug('args = {0}'.format(args))
+    logger.debug("args = {0}".format(args))
 
     # Connect to IPv6 if forced
-    if hasattr(host, 'ipv6') and host.ipv6 and '-6' in args:
-        ssh_cmds = shlex.split('ssh {0}'.format(host.ipv6))
+    if hasattr(host, "ipv6") and host.ipv6 and "-6" in args:
+        ssh_cmds = shlex.split("ssh {0}".format(host.ipv6))
         print('Connecting to "{0}" ({1})'.format(host.hostname, host.ipv6))
     # Connect to IPv4 if specified
-    elif hasattr(host, 'ipv4') and host.ipv4:
-        ssh_cmds = shlex.split('ssh {0}'.format(host.ipv4))
+    elif hasattr(host, "ipv4") and host.ipv4:
+        ssh_cmds = shlex.split("ssh {0}".format(host.ipv4))
         print('Connecting to "{0}" ({1})'.format(host.hostname, host.ipv4))
     # Connect on host name
     else:
-        ssh_cmds = shlex.split('ssh {0}'.format(host.hostname))
+        ssh_cmds = shlex.split("ssh {0}".format(host.hostname))
         print('Connecting to "{0}"'.format(host.hostname))
-    logger.debug('ssh_cmds = {0}'.format(ssh_cmds))
+    logger.debug("ssh_cmds = {0}".format(ssh_cmds))
 
     # Connect to host port
-    if hasattr(host, 'port') and host.port is not None and '-p' not in args:
-        ssh_cmds += shlex.split('-p {0}'.format(host.port))
+    if hasattr(host, "port") and host.port is not None and "-p" not in args:
+        ssh_cmds += shlex.split("-p {0}".format(host.port))
 
     # Connect as user
-    if hasattr(host, 'user') and host.user is not None and '-l' not in args:
-        ssh_cmds += shlex.split('-l {0}'.format(host.user))
+    if hasattr(host, "user") and host.user is not None and "-l" not in args:
+        ssh_cmds += shlex.split("-l {0}".format(host.user))
 
-    logger.debug('ssh_cmds = {0}'.format(ssh_cmds + args))
+    logger.debug("ssh_cmds = {0}".format(ssh_cmds + args))
     subprocess.call(ssh_cmds + args)
 
 
+def select_host_fzf(hosts):
+    """Select hosts using fzf"""
+    process = subprocess.Popen(
+        which("fzf"),
+        stdin=subprocess.PIPE,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        text=True,
+    )
+
+    # Create multiline output.
+    hostnames = "\n".join([x.hostname for x in hosts])
+
+    # Get selection from the user.
+    hostname, error = process.communicate(input=hostnames)
+
+    for host in hosts:
+        if hostname.strip() == host.hostname:
+            return host
+
+
 def select_host(hosts):
+    # Use fzf if installed.
+    if which("fzf") is not None:
+        return select_host_fzf(hosts)
+
+    # Fall back to a numeric list.
     for idx, host in enumerate(hosts):
-        if hasattr(host, 'user') and host.user is not None:
-            print('{0}) {1}@{2}'.format(idx + 1, host.user, host.hostname))
+        if hasattr(host, "user") and host.user is not None:
+            print("{0}) {1}@{2}".format(idx + 1, host.user, host.hostname))
         else:
-            print('{0}) {1}'.format(idx + 1, host.hostname))
-    option = get_answer('Connect to: ')
+            print("{0}) {1}".format(idx + 1, host.hostname))
+    option = get_answer("Connect to: ")
     try:
         return hosts[int(option) - 1]
-    except ValueError as ex:
+    except ValueError:
         return
 
 
@@ -64,7 +91,7 @@ def get_answer(text):  # pragma: nocover
     try:
         return input(text)
     except SyntaxError:
-        return ''
+        return ""
 
 
 def main():  # pragma: nocover
@@ -73,19 +100,19 @@ def main():  # pragma: nocover
         arg_parser.add_argument("name", help="name of the host to connect to")
         args, unknown = arg_parser.parse_known_args()
 
-        home_dir = os.path.expanduser('~')
-        config_path = os.path.join(home_dir, '.ssht', 'config.json')
+        home_dir = os.path.expanduser("~")
+        config_path = os.path.join(home_dir, ".ssht", "config.json")
 
         # Read generic config file.
         config = {}
         try:
             logger.debug(f"Reading config {config_path}")
-            with open(config_path, 'r') as fh:
+            with open(config_path, "r") as fh:
                 config = json.loads(fh.read())
-        except FileNotFoundError as e:
-            logger.debug(f'Config file {config_path} is missing')
-        except ValueError as ex:
-            logger.debug(f'Config file {config_path} contains invalid JSON')
+        except FileNotFoundError:
+            logger.debug(f"Config file {config_path} is missing")
+        except ValueError:
+            logger.debug(f"Config file {config_path} contains invalid JSON")
 
         # Define default parsers for backwards compatibility.
         parsers = [
@@ -94,19 +121,19 @@ def main():  # pragma: nocover
             "ssht.plugins.APIParser",
         ]
         # Use configured parsers if defined.
-        if 'parsers' in config:
-            parsers = config['parsers']
+        if "parsers" in config:
+            parsers = config["parsers"]
             logger.debug(f"Loading parsers {parsers}")
 
         hosts = []
         for module_path in parsers:
             # Split module and class name.
-            _module = '.'.join(module_path.split('.')[:-1])
-            _class = module_path.split('.')[-1:][0]
+            _module = ".".join(module_path.split(".")[:-1])
+            _class = module_path.split(".")[-1:][0]
 
             # Dynamically import and execute the parsers.
             parser = getattr(import_module(_module), _class)
-            p = parser(os.path.join(home_dir, '.ssht'))
+            p = parser(os.path.join(home_dir, ".ssht"))
             hosts.extend(p.search(args.name))
 
         logger.info(hosts)
@@ -118,14 +145,14 @@ def main():  # pragma: nocover
             host = select_host(hosts)
 
         if host is None:
-            print('No host, exiting.')
+            print("No host, exiting.")
             sys.exit(0)
 
         ssh_connect(host, unknown)
-    except KeyboardInterrupt as ex:
+    except KeyboardInterrupt:
         print()
         sys.exit(0)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
