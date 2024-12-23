@@ -28,7 +28,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [v0.9.1] - 2019-06-18
 ### Added
-- Changelog (Hello there!). 
+- Changelog (Hello there!).
 - Allow wildcards in search string.
 - Search multiple object properties.
 - Support for JSON API endpoint.

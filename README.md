@@ -26,11 +26,11 @@ or if you want the latest version:
 
 ### Usage
 
-    ssht [-h] name [-4] [-6] 
-    
+    ssht [-h] name [-4] [-6]
+
     positional arguments:
       name        name of the host to connect to
-    
+
     optional arguments:
       -h, --help  show this help message and exit
       -4          connect using ipv4 (skip dns if ipv4 address is defined)
