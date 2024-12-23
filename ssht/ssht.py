@@ -71,7 +71,7 @@ def select_host_fzf(hosts):
 
 def select_host(hosts):
     # Use fzf if installed.
-    if os.path.exists(which("fzf")):
+    if which("fzf") is not None:
         return select_host_fzf(hosts)
 
     # Fall back to a numeric list.
