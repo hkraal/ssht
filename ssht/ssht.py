@@ -6,6 +6,7 @@ import shlex
 import subprocess
 import sys
 from importlib import import_module
+from shutil import which
 
 
 def get_log_level():
@@ -47,7 +48,33 @@ def ssh_connect(host, args):
     subprocess.call(ssh_cmds + args)
 
 
+def select_host_fzf(hosts):
+    """Select hosts using fzf"""
+    process = subprocess.Popen(
+        which("fzf"),
+        stdin=subprocess.PIPE,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        text=True,
+    )
+
+    # Create multiline output.
+    hostnames = "\n".join([x.hostname for x in hosts])
+
+    # Get selection from the user.
+    hostname, error = process.communicate(input=hostnames)
+
+    for host in hosts:
+        if hostname.strip() == host.hostname:
+            return host
+
+
 def select_host(hosts):
+    # Use fzf if installed.
+    if os.path.exists(which("fzf")):
+        return select_host_fzf(hosts)
+
+    # Fall back to a numeric list.
     for idx, host in enumerate(hosts):
         if hasattr(host, "user") and host.user is not None:
             print("{0}) {1}@{2}".format(idx + 1, host.user, host.hostname))
