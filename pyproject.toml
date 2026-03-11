@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "ssht"
-version = "3.0.1"
+version = "3.0.2"
 description = "SSH client wrapper for easily connecting to hosts"
 authors = ["Henk Kraal <hkraal@users.noreply.github.com>"]
 classifiers = [
@@ -27,7 +27,7 @@ packages = [
 ssht = "ssht.ssht:main"
 
 [tool.poetry.dependencies]
-python = ">=3.10"
+python = ">=3.10,<4.0"
 mysql-connector = "^2.2.9"
 requests = "^2.31.0"
 
